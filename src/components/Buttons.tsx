@@ -39,16 +39,16 @@ export const RestoreButton: FC<Omit<ButtonProps, "children">> = (props) => {
 export const ToggleButton: FC<
   Omit<ButtonProps, "children"> & {
     toggleState?: boolean;
-    iconOn: ReactElement;
-    iconOff: ReactElement;
+    contentOn: ReactElement | string;
+    contentOff: ReactElement | string;
   }
-> = (props) => {
+> = ({ contentOn: iconOn, contentOff: iconOff, toggleState, ...props }) => {
   return (
     <button
       className="hover:text-gray-700 transition-colors flex items-center justify-center"
       {...props}
     >
-      {props.toggleState ? props.iconOn : props.iconOff}
+      {toggleState ? iconOn : iconOff}
     </button>
   );
 };

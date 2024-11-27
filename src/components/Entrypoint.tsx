@@ -3,12 +3,15 @@ import { ListItem, useGetListData } from "../api/getListData";
 import { Card } from "./List";
 import { Spinner } from "./Spinner";
 import { useStore } from "../store";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { ToggleButton } from "./Buttons";
 
 export const Entrypoint = () => {
   const [visibleCards, setVisibleCards] = useState<ListItem[]>([]);
   const [deletedCards, setDeletedCards] = useState<ListItem[]>([]);
   const [showDeletedCards, setShowDeletedCards] = useState<boolean>(false);
   const listQuery = useGetListData();
+  const [animationParent] = useAutoAnimate();
 
   const {
     deletedCardsIds,
@@ -23,18 +26,14 @@ export const Entrypoint = () => {
       return;
     }
     setDeletedCards(
-      listQuery.data
-        ?.filter((item) => deletedCardsIds.includes(item.id))
-        .sort((a, b) => a.title.localeCompare(b.title)) ?? [],
+      listQuery.data?.filter((item) => deletedCardsIds.includes(item.id)) ?? [],
     );
     setVisibleCards(
-      listQuery.data
-        ?.filter(
-          (item) =>
-            (item.isVisible || openCardsIds.includes(item.id)) &&
-            !deletedCardsIds.includes(item.id),
-        )
-        .sort((a, b) => a.title.localeCompare(b.title)) ?? [],
+      listQuery.data?.filter(
+        (item) =>
+          (item.isVisible || openCardsIds.includes(item.id)) &&
+          !deletedCardsIds.includes(item.id),
+      ) ?? [],
     );
   }, [listQuery.data, listQuery.isLoading, deletedCardsIds, openCardsIds]);
 
@@ -48,7 +47,7 @@ export const Entrypoint = () => {
         <h1 className="mb-1 font-medium text-lg">
           My Awesome List ({visibleCards.length})
         </h1>
-        <div className="flex flex-col gap-y-3">
+        <div className="flex flex-col gap-y-3" ref={animationParent}>
           {visibleCards.map((card) => (
             <Card
               key={card.id}
@@ -66,14 +65,15 @@ export const Entrypoint = () => {
             Deleted Cards ({deletedCardsCount})
           </h1>
           <div className="flex gap-2">
-            <button
+            <ToggleButton
               onClick={() => {
                 setShowDeletedCards((n) => !n);
               }}
               className="text-white text-sm transition-colors hover:bg-gray-800 disabled:bg-black/75 bg-black rounded px-3 py-1"
-            >
-              {showDeletedCards ? "Hide" : "Reveal"}
-            </button>
+              toggleState={!showDeletedCards}
+              contentOn={"Reveal"}
+              contentOff={"Hide"}
+            />
             <button
               className="text-white text-sm transition-colors hover:bg-gray-800 disabled:bg-black/75 bg-black rounded  px-3 py-1"
               disabled={listQuery.isFetching}
@@ -85,7 +85,7 @@ export const Entrypoint = () => {
             </button>
           </div>
         </div>
-        <div className="flex flex-col gap-y-3">
+        <div className="flex flex-col gap-y-3" ref={animationParent}>
           {showDeletedCards &&
             deletedCards.map((card) => (
               <Card key={card.id} card={card} isDeleted />

@@ -16,10 +16,7 @@ export const useGetListData = () => {
     queryFn: async () => {
       await sleep(1000);
 
-      if (getRandom() > 85) {
-        console.error("An unexpected error occurred!");
-        throw new Error("👀");
-      }
+      //fixed unexpected error 👀
 
       const mockData = mockJson as Omit<ListItem, "isVisible">[];
 
